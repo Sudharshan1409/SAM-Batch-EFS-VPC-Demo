@@ -207,6 +207,8 @@ Resources:
       Type: container
       JobDefinitionName: my-batch-job-definition
       ContainerProperties:
+        Command:
+          - "/app/function.sh"
         Image: 'public.ecr.aws/h4o2x6p7/kd3:latest'
         NetworkConfiguration:
           AssignPublicIp: ENABLED
@@ -217,9 +219,9 @@ Resources:
           LogDriver: awslogs
         ResourceRequirements: 
           - Type: MEMORY
-            Value: 8192
+            Value: 4096
           - Type: VCPU
-            Value: 4
+            Value: 2
         MountPoints:
           - SourceVolume: efsVolume
             ContainerPath: /mnt/efs

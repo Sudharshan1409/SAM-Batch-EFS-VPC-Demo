@@ -14,6 +14,8 @@ echo "running list directory command in present directory"
 ls -l 
 echo "running list directory command in _dist directory"
 ls -l _dist
+echo "deleting the _dist directory in efs if exists"
+rm -rf /mnt/efs/_dist
 echo "running cp command"
 cp -R _dist /mnt/efs
 
