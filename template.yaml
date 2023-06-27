@@ -79,6 +79,17 @@ Resources:
         - Key: owner
           Value: sandy-efs
 
+  NatGatewayEIP:
+    Type: AWS::EC2::EIP
+    Properties:
+      Domain: vpc
+
+  NatGateway:
+    Type: AWS::EC2::NatGateway
+    Properties:
+      AllocationId: !GetAtt NatGatewayEIP.AllocationId
+      SubnetId: !Ref MountTargetSubnetOne
+
   PublicRouteTableOne:
     Type: AWS::EC2::RouteTable
     Properties:
@@ -103,13 +114,22 @@ Resources:
         - Key: owner
           Value: sandy-efs
 
-  RouteToIGWOne:
+  #RouteToIGWOne:
+    #Type: AWS::EC2::Route
+    #DependsOn: AttachIGW
+    #Properties:
+      #RouteTableId: !Ref PublicRouteTableOne
+      #DestinationCidrBlock: 0.0.0.0/0
+      #GatewayId: !Ref IGW
+
+  RouteToINWOne:
     Type: AWS::EC2::Route
-    DependsOn: AttachIGW
+    DependsOn: NatGateway
     Properties:
       RouteTableId: !Ref PublicRouteTableOne
       DestinationCidrBlock: 0.0.0.0/0
-      GatewayId: !Ref IGW
+      NatGatewayId: !Ref NatGateway
+      #GatewayId: !Ref IGW
 
   RouteToIGWTwo:
     Type: AWS::EC2::Route
@@ -277,6 +297,35 @@ Resources:
         - Arn: !GetAtt AccessPointResource.Arn
           LocalMountPath: /mnt/efs
     DependsOn: FileSystemResource
+
+  CloneRepo:
+    DependsOn: AccessPointResource
+    Type: AWS::Serverless::Function
+    Metadata:
+      Dockerfile: Dockerfile
+      DockerContext: lambda/clone-repo
+      DockerTag: sandy-lambda-1
+    Properties:
+      PackageType: Image
+      Architectures:
+        - x86_64
+      Timeout: 900
+      MemorySize: 1024
+      VpcConfig:
+        SecurityGroupIds:
+          - !Ref MountTargetSG
+        SubnetIds:
+          - !Ref MountTargetSubnetOne
+      FileSystemConfigs:
+        - Arn: !GetAtt AccessPointResource.Arn
+          LocalMountPath: /mnt/efs
+      Policies:
+        - AWSLambdaVPCAccessExecutionRole
+        - Statement:
+            - Sid: Admin
+              Effect: Allow
+              Action: "*"
+              Resource: "*"
 
 Outputs:
   MyComputeEnvironmentArn:

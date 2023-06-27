@@ -6,4 +6,4 @@ s3_prefix = "kd3"
 region = "ap-south-1"
 confirm_changeset = true
 capabilities = "CAPABILITY_IAM"
-image_repositories = []
+image_repositories = ["CloneRepo=454445151329.dkr.ecr.ap-south-1.amazonaws.com/kd32b1ccb53/clonerepo9c245c20repo"]
