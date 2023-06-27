@@ -20,5 +20,3 @@ RUN mkdir -p /app
 COPY function.sh /app/function.sh
 RUN chmod +x /app/function.sh
 
-# Set the CMD to your handler (could also be done as a parameter override outside of the Dockerfile)
-CMD [ "/app/function.sh" ]

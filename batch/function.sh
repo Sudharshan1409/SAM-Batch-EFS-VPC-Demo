@@ -10,6 +10,11 @@ make ci-setup
 export GOPATH=$HOME/go && export PATH=$PATH:$GOROOT/bin:$GOPATH/bin
 echo "runing make file"
 make gen-checksum build-cross
+echo "running list directory command in present directory"
+ls -l 
+echo "running list directory command in _dist directory"
+ls -l _dist
+echo "running cp command"
 cp -R _dist /mnt/efs
 
 echo "Deployment Finished"

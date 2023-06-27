@@ -146,7 +146,7 @@ Resources:
       RouteTableId: !Ref PublicRouteTableThree
 
   FileSystemResource:
-    Type: "AWS::EFS::FileSystem"
+    Type: AWS::EFS::FileSystem
     Properties:
       PerformanceMode: maxIO
       Encrypted: true
@@ -159,6 +159,7 @@ Resources:
           - Effect: "Allow"
             Action:
               - "elasticfilesystem:ClientMount"
+              - "elasticfilesystem:ClientWrite"
             Principal:
               AWS: "*"
 
@@ -216,9 +217,9 @@ Resources:
           LogDriver: awslogs
         ResourceRequirements: 
           - Type: MEMORY
-            Value: 512
+            Value: 8192
           - Type: VCPU
-            Value: 0.25
+            Value: 4
         MountPoints:
           - SourceVolume: efsVolume
             ContainerPath: /mnt/efs
@@ -240,7 +241,7 @@ Resources:
       State: ENABLED
       ComputeResources:
         Type: FARGATE
-        MaxvCpus: 2
+        MaxvCpus: 6
         Subnets:
           - !Ref MountTargetSubnetOne
           - !Ref MountTargetSubnetTwo
